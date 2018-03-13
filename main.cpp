@@ -1,0 +1,75 @@
+// standard library
+#include <iostream>
+#include <clocale>
+#include <cstdlib>
+#include <cstring>
+#include <memory>
+#include <exception>
+
+// boost
+#include <boost/format.hpp>
+#include <boost/system/system_error.hpp>
+
+// header
+#include "function.h"
+#include "exception.h"
+
+// using
+using namespace std;
+using namespace dfs_cls;
+using namespace boost;
+
+int wmain(int argc, wchar_t** argv)
+{
+	try
+	{
+		wcout.imbue(locale(""));
+		wcerr.imbue(locale(""));
+		wcin.imbue(locale(""));
+		setlocale(LC_ALL, "");
+
+		if(argc == 1)
+		{
+			welcome();
+			wcout << endl;
+			CommandLine();
+		}
+		else if(argc == 2)
+			script(argv[1]);
+		else
+		{
+			wcerr << wformat(L"usage: %1% <script-filename>") % argv[0] << endl;
+			return EXIT_FAILURE;
+		}
+
+		return EXIT_SUCCESS;
+	}
+	catch(boost::system::system_error& e)
+	{
+		const char*		mess_c		= e.what();
+		const size_t		mess_len	= strlen(mess_c);
+		unique_ptr<wchar_t[]>	mess(new wchar_t[mess_len + 1]);
+		mbstowcs(mess.get(), mess_c, mess_len + 1);
+
+		wcerr << L"error:" << endl;
+		wcerr << mess.get() << endl;
+		wcerr << wformat(L"(error code: %1%)") % e.code().value() << endl;
+	}
+	catch(std::exception& e)
+	{
+		const char*		mess_c		= e.what();
+		const size_t		mess_len	= strlen(mess_c);
+		unique_ptr<wchar_t[]>	mess(new wchar_t[mess_len + 1]);
+		mbstowcs(mess.get(), mess_c, mess_len + 1);
+
+		wcerr << L"error:" << endl;
+		wcerr << mess.get() << endl;
+	}
+	catch(dfs_cls::exception& e)
+	{
+		wcerr << L"error:" << endl;
+		wcerr << e.getMessage() << endl;
+	}
+
+	return EXIT_FAILURE;
+}
