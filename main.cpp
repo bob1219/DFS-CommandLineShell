@@ -23,9 +23,9 @@ int wmain(int argc, wchar_t** argv)
 {
 	try
 	{
-		wcout.imbue(locale(""));
-		wcerr.imbue(locale(""));
-		wcin.imbue(locale(""));
+		wcout.imbue(locale{""});
+		wcerr.imbue(locale{""});
+		wcin.imbue(locale{""});
 		setlocale(LC_ALL, "");
 
 		if(argc == 1)
@@ -46,9 +46,9 @@ int wmain(int argc, wchar_t** argv)
 	}
 	catch(boost::system::system_error& e)
 	{
-		const char*		mess_c		= e.what();
-		const size_t		mess_len	= strlen(mess_c);
-		unique_ptr<wchar_t[]>	mess(new wchar_t[mess_len + 1]);
+		const auto		mess_c		= e.what();
+		const auto		mess_len	= strlen(mess_c);
+		unique_ptr<wchar_t[]>	mess{new wchar_t[mess_len + 1]};
 		mbstowcs(mess.get(), mess_c, mess_len + 1);
 
 		wcerr << L"error:" << endl;
@@ -57,9 +57,9 @@ int wmain(int argc, wchar_t** argv)
 	}
 	catch(std::exception& e)
 	{
-		const char*		mess_c		= e.what();
-		const size_t		mess_len	= strlen(mess_c);
-		unique_ptr<wchar_t[]>	mess(new wchar_t[mess_len + 1]);
+		const auto		mess_c		= e.what();
+		const auto		mess_len	= strlen(mess_c);
+		unique_ptr<wchar_t[]>	mess{new wchar_t[mess_len + 1]};
 		mbstowcs(mess.get(), mess_c, mess_len + 1);
 
 		wcerr << L"error:" << endl;
