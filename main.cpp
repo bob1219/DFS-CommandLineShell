@@ -38,7 +38,7 @@ int wmain(int argc, wchar_t** argv)
 			script(argv[1]);
 		else
 		{
-			wcerr << wformat(L"usage: %1% <script-filename>") % argv[0] << endl;
+			wcerr << wformat{L"usage: %1% <script-filename>"} % argv[0] << endl;
 			return EXIT_FAILURE;
 		}
 
@@ -53,7 +53,7 @@ int wmain(int argc, wchar_t** argv)
 
 		wcerr << L"error:" << endl;
 		wcerr << mess.get() << endl;
-		wcerr << wformat(L"(error code: %1%)") % e.code().value() << endl;
+		wcerr << wformat{L"(error code: %1%)"} % e.code().value() << endl;
 	}
 	catch(std::exception& e)
 	{
