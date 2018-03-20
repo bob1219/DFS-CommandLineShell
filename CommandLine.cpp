@@ -27,7 +27,7 @@ using namespace boost;
 		}
 		catch(dfs_cls::exception& e)
 		{
-			wcerr << wformat(L"error: %1%.") % e.getMessage() << endl;
+			wcerr << wformat{L"error: %1%."} % e.getMessage() << endl;
 		}
 
 		wcout << endl;
