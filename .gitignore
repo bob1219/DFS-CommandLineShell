@@ -1,0 +1,4 @@
+*.txt
+*.lib
+makefile
+*.obj
