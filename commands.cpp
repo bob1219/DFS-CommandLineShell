@@ -25,6 +25,9 @@ void dfs_cls::command::mk(const wstring& filename)
 
 void dfs_cls::command::rm(const wstring& filename)
 {
+	if(!is_regular_file(filename))
+		throw dfs_cls::exception{L"it is not file"};
+
 	try
 	{
 		remove(filename);
@@ -76,4 +79,19 @@ void mkdir(const wstring& dirname)
 {
 	if(!create_directory(dirname))
 		throw dfs_cls::exception{L"failed make a directory"};
+}
+
+void rmdir(const wstring& dirname)
+{
+	if(!is_directory(dirname))
+		throw dfs_cls::exception{L"it is not directory"};
+
+	try
+	{
+		remove(dirname);
+	}
+	catch(filesystem_error)
+	{
+		throw dfs_cls::exception{L"failed remove"};
+	}
 }
