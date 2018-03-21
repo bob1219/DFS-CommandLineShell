@@ -44,3 +44,8 @@ void dfs_cls::command::cp(const wstring& FromFilename, const wstring& ToFilename
 		throw dfs_cls::exception{L"failed copy"};
 	}
 }
+
+void basename(const wstring& filename)
+{
+	wcout << wpath{filename}.filename().wstring() << endl;
+}
