@@ -60,3 +60,14 @@ void findf(const wstring& dirname, const wregex& r)
 			wcout << p.wstring() << endl;
 	});
 }
+
+void list(const wstring& dirname)
+{
+	for_each(directory_iterator{dirname}, directory_iterator{}, [](const wpath& p)
+	{
+		if(is_regular_file(p))
+			wcout << L"file:\t" << p.wstring() << endl;
+		else
+			wcout << L"dir:\t" << p.wstring() << endl;
+	});
+}
