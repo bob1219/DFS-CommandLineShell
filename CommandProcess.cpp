@@ -135,6 +135,12 @@ void dfs_cls::CommandProcess(const wstring& command)
 			arg_error();
 		command::time();
 	}
+	else if(tokens.at(0) == L"app")
+	{
+		if(tokens.size() == 1)
+			arg_error();
+		command::app(vector<wstring>{begin(tokens) + 1, end(tokens)});
+	}
 	else if(tokens.at(0) == L"exit")
 		exit(EXIT_SUCCESS);
 	else throw dfs_cls::exception{L"unknown command"};
