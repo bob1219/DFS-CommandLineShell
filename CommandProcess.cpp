@@ -114,7 +114,7 @@ void dfs_cls::CommandProcess(const wstring& command)
 	{
 		if(tokens.size() != 3)
 			arg_error();
-		command::findt(tokens.at(1), tokens.at(2));
+		command::findt(tokens.at(1), wregex{tokens.at(2)});
 	}
 	else if(tokens.at(0) == L"cal")
 	{
