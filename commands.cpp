@@ -2,6 +2,8 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <regex>
+#include <algorithm>
 
 // boost
 #include <boost/filesystem.hpp>
@@ -48,4 +50,13 @@ void dfs_cls::command::cp(const wstring& FromFilename, const wstring& ToFilename
 void basename(const wstring& filename)
 {
 	wcout << wpath{filename}.filename().wstring() << endl;
+}
+
+void findf(const wstring& dirname, const wregex& r)
+{
+	for_each(directory_iterator{dirname}, directory_iterator{}, [](const wpath& p)
+	{
+		if(regex_match(p.wstring(), r))
+			wcout << p.wstring() << endl;
+	});
 }
