@@ -71,3 +71,9 @@ void list(const wstring& dirname)
 			wcout << L"dir:\t" << p.wstring() << endl;
 	});
 }
+
+void mkdir(const wstring& dirname)
+{
+	if(!create_directory(dirname))
+		throw dfs_cls::exception{L"failed make a directory"};
+}
