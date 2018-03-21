@@ -116,14 +116,6 @@ void dfs_cls::CommandProcess(const wstring& command)
 			arg_error();
 		command::findt(tokens.at(1), wregex{tokens.at(2)});
 	}
-	else if(tokens.at(0) == L"cal")
-	{
-		if(tokens.size() == 1)
-			command::cal();
-		else if(tokens.size() == 3)
-			command::cal(tokens.at(1), tokens.at(2));
-		else arg_error();
-	}
 	else if(tokens.at(0) == L"date")
 	{
 		if(tokens.size() != 1)
