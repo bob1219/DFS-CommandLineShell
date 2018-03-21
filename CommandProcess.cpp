@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <cstdlib>
+#include <regex>
 
 // header
 #include "function.h"
@@ -48,9 +49,9 @@ void dfs_cls::CommandProcess(const wstring& command)
 	else if(tokens.at(0) == L"findf")
 	{
 		if(tokens.size() == 2)
-			command::findf(tokens.at(1));
+			command::findf(wregex{tokens.at(1)});
 		else if(tokens.size() == 3)
-			command::findf(tokens.at(1), tokens.at(2));
+			command::findf(tokens.at(1), wregex{tokens.at(2)});
 		else arg_error();
 	}
 	else if(tokens.at(0) == L"list")
