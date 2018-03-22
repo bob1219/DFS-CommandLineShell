@@ -5,6 +5,9 @@
 #include <regex>
 #include <algorithm>
 #include <cstdlib>
+#include <cstddef>
+#include <memory>
+#include <cstring>
 
 // boost
 #include <boost/filesystem.hpp>
@@ -13,6 +16,7 @@
 // header
 #include "function.h"
 #include "exception.h"
+#include "constant.h"
 
 // using
 using namespace std;
@@ -208,4 +212,39 @@ void dfs_cls::command::tview(const wstring& filename)
 void dfs_cls::command::cwdir()
 {
 	wcout << current_path().wstring() << endl;
+}
+
+void dfs_cls::command::info(const wstring& name)
+{
+	wpath p{name};
+
+	bool isDirectory;
+	size_t size;
+	time_t time;
+	wstring extension;
+	if(is_directory(p))
+	{
+		isDirectory = true;
+		size = file_size(p);
+		time = last_write_time(p);
+	}
+	else if(is_regular_file(p))
+	{
+		isDirectory = false;
+		size = file_size(p);
+		time = last_write_time(p);
+		extension = extension(p);
+	}
+
+	const auto time_c = ctime(&time);
+	const auto time_len = strlen(time_c);
+	unique_ptr<wchar_t[]> time_s{new wchar_t[mess_len + 1]};
+	mbstowcs(time_s.get(), time_c, time_len + 1);
+
+	wcout << wformat{L"Type: %1%"} % (isDirectory ? L"directory" : L"file") << endl;
+	wcout << wformat{L"Size: %1%"} % size << endl;
+	wcout << wformat{L"Time: %1%"} % time_s.get() << endl;
+
+	if(!isDirectory)
+		wcout << wformat{L"Extension: %1%"} % extension << endl;
 }

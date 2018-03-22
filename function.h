@@ -31,7 +31,7 @@ namespace dfs_cls
 		void bview(const std::wstring& filename);
 		void tview(const std::wstring& filename);
 		void cwdir();
-		void info(const std::wstring& filename);
+		void info(const std::wstring& name);
 		void findt(const std::wstring& filename, const wregex& r);
 		void date();
 		void time();
