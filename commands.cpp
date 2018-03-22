@@ -248,3 +248,20 @@ void dfs_cls::command::info(const wstring& name)
 	if(!isDirectory)
 		wcout << wformat{L"Extension: %1%"} % extension << endl;
 }
+
+void findt(const wstring& filename, const wregex& r)
+{
+	wifstream file;
+	file.imbue(locale{""});
+	file.open(filename);
+	if(file.fail())
+		throw dfs_cls::exception{L"failed open file"};
+
+	wstring line;
+	for(unsigned int i{1}; getline(file, line); ++i)
+	{
+		wsmatch result;
+		if(regex_search(line, result, r))
+			wcout << wformat{L"%1%:\t%2%"} % i % result.str() << endl;
+	}
+}
