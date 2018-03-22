@@ -204,3 +204,8 @@ void dfs_cls::command::tview(const wstring& filename)
 	for(unsigned int i{1}; getline(file, line); ++line)
 		wcout << wformat{L"%1%:\t%2%"} % i % line << endl;
 }
+
+void dfs_cls::command::cwdir()
+{
+	wcout << current_path().wstring() << endl;
+}
