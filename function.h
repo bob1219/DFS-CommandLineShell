@@ -33,8 +33,7 @@ namespace dfs_cls
 		void cwdir();
 		void info(const std::wstring& name);
 		void findt(const std::wstring& filename, const wregex& r);
-		void date();
-		void time();
+		void now();
 		void app(const std::vector<std::wstring>& args);
 	}
 }

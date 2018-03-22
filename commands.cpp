@@ -249,7 +249,7 @@ void dfs_cls::command::info(const wstring& name)
 		wcout << wformat{L"Extension: %1%"} % extension << endl;
 }
 
-void findt(const wstring& filename, const wregex& r)
+void dfs_cls::command::findt(const wstring& filename, const wregex& r)
 {
 	wifstream file;
 	file.imbue(locale{""});
@@ -264,4 +264,15 @@ void findt(const wstring& filename, const wregex& r)
 		if(regex_search(line, result, r))
 			wcout << wformat{L"%1%:\t%2%"} % i % result.str() << endl;
 	}
+}
+
+void dfs_cls::command::now()
+{
+	const auto time = time(nullptr);
+	const auto time_c = ctime(&time);
+	const auto time_len = strlen(time_c);
+	unique_ptr<wchar_t[]> time{new wchar_t[time_len + 1]};
+	mbstowcs(time.get(), time_c, time_len + 1);
+
+	wcout << time.get() << endl;
 }
