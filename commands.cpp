@@ -52,12 +52,12 @@ void dfs_cls::command::cp(const wstring& FromFilename, const wstring& ToFilename
 	}
 }
 
-void basename(const wstring& filename)
+void dfs_cls::command::basename(const wstring& filename)
 {
 	wcout << wpath{filename}.filename().wstring() << endl;
 }
 
-void findf(const wstring& dirname, const wregex& r)
+void dfs_cls::command::findf(const wstring& dirname, const wregex& r)
 {
 	for_each(directory_iterator{dirname}, directory_iterator{}, [](const wpath& p)
 	{
@@ -66,7 +66,7 @@ void findf(const wstring& dirname, const wregex& r)
 	});
 }
 
-void list(const wstring& dirname)
+void dfs_cls::command::list(const wstring& dirname)
 {
 	for_each(directory_iterator{dirname}, directory_iterator{}, [](const wpath& p)
 	{
@@ -77,13 +77,13 @@ void list(const wstring& dirname)
 	});
 }
 
-void mkdir(const wstring& dirname)
+void dfs_cls::command::mkdir(const wstring& dirname)
 {
 	if(!create_directory(dirname))
 		throw dfs_cls::exception{L"failed make a directory"};
 }
 
-void rmdir(const wstring& dirname)
+void dfs_cls::command::rmdir(const wstring& dirname)
 {
 	if(!is_directory(dirname))
 		throw dfs_cls::exception{L"it is not directory"};
@@ -98,7 +98,7 @@ void rmdir(const wstring& dirname)
 	}
 }
 
-void cpdir(const wstring& fromDirname, const wstring& toDirname)
+void dfs_cls::command::cpdir(const wstring& fromDirname, const wstring& toDirname)
 {
 	try
 	{
@@ -124,7 +124,7 @@ void cpdir(const wstring& fromDirname, const wstring& toDirname)
 	}
 }
 
-void rename(const wstring& FromName, const wstring& ToName)
+void dfs_cls::command::rename(const wstring& FromName, const wstring& ToName)
 {
 	try
 	{
