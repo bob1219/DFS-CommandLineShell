@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <memory>
 #include <cstring>
+#include <vector>
 
 // boost
 #include <boost/filesystem.hpp>
@@ -275,4 +276,23 @@ void dfs_cls::command::now()
 	mbstowcs(time.get(), time_c, time_len + 1);
 
 	wcout << time.get() << endl;
+}
+
+void dfs_cls::command::app(vector<wstring> args)
+{
+	wstring command_ws{args.at(0)};
+	const auto first = true;
+	for(const auto& arg: args)
+	{
+		if(first)
+			first = false;
+		else
+			first += (L' ' + arg);
+	}
+
+	const auto command_len = command_ws.size();
+	unique_ptr<char[]> command{new char[command_len + 1]};
+	wcstombs(command.get(), command_ws.c_str(), command_len + 1);
+
+	system(command.get());
 }
