@@ -4,6 +4,7 @@
 #include <fstream>
 #include <regex>
 #include <algorithm>
+#include <cstdlib>
 
 // boost
 #include <boost/filesystem.hpp>
@@ -133,5 +134,60 @@ void dfs_cls::command::rename(const wstring& FromName, const wstring& ToName)
 	catch(filesystem_error)
 	{
 		throw dfs_cls::exception{L"failed rename"};
+	}
+}
+
+void dfs_cls::command::bview(const wstring& filename)
+{
+	ifstream file{filename, ios::binary};
+	if(file.fail())
+		throw dfs_cls::exception{L"failed open file"};
+
+	vector<char> data;
+	for(; !file.eof(); ++i)
+	{
+		char buf;
+		file.read(&buf, 1);
+		data.push_back(buf);
+	}
+
+	wcout << L"\t+0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F 0123456789ABCDEF" << endl;
+
+	vector<vector<char>> DataLines;
+	auto BaseIter = begin(data);
+	while(true)
+	{
+		auto start = BaseIter;
+		auto end = BaseIter;
+		for(unsigned int i{1};; ++i)
+		{
+			++end;
+			if(i == 0x11 || end = end(data))
+			{
+				--end;
+				break;
+			}
+		}
+
+		DataLines.push_back(vector<char>{start, end});
+		if((end + 1) == end(data))
+			break;
+
+		BaseIter = end;
+	}
+
+	for(const auto& DataLine: DataLines)
+	{
+		for(auto byte: DataLine)
+			wcout << static_cast<unsigned int>(byte) << L' ' << endl;
+
+		for(auto byte: DataLine)
+		{
+			wchar_t c;
+			mbtowc(&c, &byte, 1);
+			wcout << c;
+		}
+
+		wcout << endl;
 	}
 }
