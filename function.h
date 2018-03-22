@@ -26,7 +26,7 @@ namespace dfs_cls
 		void list(const std::wstring& dirname);
 		void mkdir(const std::wstring& dirname);
 		void rmdir(const std::wstring& dirname);
-		void cpdir(const std::wstring& FromDirname, const std::wstring& ToDirname);
+		void cpdir(const std::wstring& fromDirname, const std::wstring& toDirname);
 		void rename(const std::wstring& FromName, const std::wstring& ToName);
 		void bview(const std::wstring& filename);
 		void tview(const std::wstring& filename);
