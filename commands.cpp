@@ -191,3 +191,16 @@ void dfs_cls::command::bview(const wstring& filename)
 		wcout << endl;
 	}
 }
+
+void dfs_cls::command::tview(const wstring& filename)
+{
+	wifstream file;
+	file.imbue(locale{""});
+	file.open(filename);
+	if(file.fail())
+		throw dfs_cls::exception{L"failed open file"};
+
+	wstring line;
+	for(unsigned int i{1}; getline(file, line); ++line)
+		wcout << wformat{L"%1%:\t%2%"} % i % line << endl;
+}
