@@ -123,3 +123,15 @@ void cpdir(const wstring& fromDirname, const wstring& toDirname)
 		throw dfs_cls::exception{(wformat{L"failed copy directory \"%1%\" -> \"%2%\""} % fromDirname % toDirname).str()};
 	}
 }
+
+void rename(const wstring& FromName, const wstring& ToName)
+{
+	try
+	{
+		rename(FromName, ToName);
+	}
+	catch(filesystem_error)
+	{
+		throw dfs_cls::exception{L"failed rename"};
+	}
+}
