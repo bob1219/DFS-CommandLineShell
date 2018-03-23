@@ -46,11 +46,11 @@ void dfs_cls::command::rm(const wstring& filename)
 	}
 }
 
-void dfs_cls::command::cp(const wstring& FromFilename, const wstring& ToFilename)
+void dfs_cls::command::cp(const wstring& SourceFileName, const wstring& DestFileName)
 {
 	try
 	{
-		copy_file(FromFilename, ToFilename, overwrite_if_exists);
+		copy_file(SourceFileName, DestFileName, overwrite_if_exists);
 	}
 	catch(filesystem_error)
 	{
@@ -104,37 +104,37 @@ void dfs_cls::command::rmdir(const wstring& dirname)
 	}
 }
 
-void dfs_cls::command::cpdir(const wstring& fromDirname, const wstring& toDirname)
+void dfs_cls::command::cpdir(const wstring& sourceDirName, const wstring& destDirName)
 {
 	try
 	{
-		if(is_directory(toDirname))
-			throw dfs_cls::exception{(wformat{L"exists a directory \"%1%\""} % toDirname).str()};
-		if(!create_directories(toDirname))
-			throw dfs_cls::exception{(wformat{L"failed make a directory \"%1%\""} % toDirname).str()};
+		if(is_directory(destDirName))
+			throw dfs_cls::exception{(wformat{L"exists destination directory \"%1%\""} % destDirName).str()};
+		if(!create_directories(destDirName))
+			throw dfs_cls::exception{(wformat{L"failed make destination directory \"%1%\""} % destDirName).str()};
 
-		wstring FromDirname{begin(fromDirname), end(fromDirname)};
-		wstring ToDirname{begin(toDirname), end(toDirname)};
+		wstring SourceDirName{begin(sourceDirName), end(sourceDirName)};
+		wstring DestDirName{begin(destDirName), end(destDirName)};
 
-		for_each(directory_iterator{FromDirname}, directory_iterator{}, [](const wpath& p)
+		for_each(directory_iterator{SourceDirName}, directory_iterator{}, [](const wpath& p)
 		{
 			if(is_directory(p))
-				cpdir(p, ToDirname + PATH_BREAK_CHARACTER + p.filename().wstring());
+				cpdir(p, DestDirName + PATH_BREAK_CHARACTER + p.filename().wstring());
 			else
-				copy_file(p, ToDirname + PATH_BREAK_CHARACTER + p.filename().wstring(), copy_option::overwrite_if_exists);
+				copy_file(p, DestDirName + PATH_BREAK_CHARACTER + p.filename().wstring(), copy_option::overwrite_if_exists);
 		});
 	}
 	catch(filesystem_error)
 	{
-		throw dfs_cls::exception{(wformat{L"failed copy directory \"%1%\" -> \"%2%\""} % fromDirname % toDirname).str()};
+		throw dfs_cls::exception{(wformat{L"failed copy directory \"%1%\" -> \"%2%\""} % sourceDirName % destDirName).str()};
 	}
 }
 
-void dfs_cls::command::rename(const wstring& FromName, const wstring& ToName)
+void dfs_cls::command::rename(const wstring& SourceName, const wstring& ToName)
 {
 	try
 	{
-		rename(FromName, ToName);
+		rename(SourceName, ToName);
 	}
 	catch(filesystem_error)
 	{
@@ -144,12 +144,15 @@ void dfs_cls::command::rename(const wstring& FromName, const wstring& ToName)
 
 void dfs_cls::command::bview(const wstring& filename)
 {
+	constexpr auto BytesNumberInDatasUnit = 0x10;
+
 	ifstream file{filename, ios::binary};
 	if(file.fail())
 		throw dfs_cls::exception{L"failed open file"};
 
+	// Read datas
 	vector<char> data;
-	for(; !file.eof(); ++i)
+	while(!file.eof())
 	{
 		char buf;
 		file.read(&buf, 1);
@@ -158,35 +161,37 @@ void dfs_cls::command::bview(const wstring& filename)
 
 	wcout << L"\t+0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F 0123456789ABCDEF" << endl;
 
-	vector<vector<char>> DataLines;
+	// Split Datas
+	vector<vector<char>> DataUnits;
 	auto BaseIter = begin(data);
 	while(true)
 	{
 		auto start = BaseIter;
 		auto end = BaseIter;
-		for(unsigned int i{1};; ++i)
+		for(auto i = 1;; ++i)
 		{
 			++end;
-			if(i == 0x11 || end = end(data))
+			if(i == BytesNumberInDatasUnit + 1 || end == end(data))
 			{
 				--end;
 				break;
 			}
 		}
 
-		DataLines.push_back(vector<char>{start, end});
+		DataUnits.push_back(vector<char>{start, end});
 		if((end + 1) == end(data))
 			break;
 
 		BaseIter = end;
 	}
 
-	for(const auto& DataLine: DataLines)
+	// Print
+	for(const auto& DataUnit: DataLines)
 	{
-		for(auto byte: DataLine)
+		for(auto byte: DataUnit)
 			wcout << static_cast<unsigned int>(byte) << L' ' << endl;
 
-		for(auto byte: DataLine)
+		for(auto byte: DataUnit)
 		{
 			wchar_t c;
 			mbtowc(&c, &byte, 1);
@@ -206,7 +211,7 @@ void dfs_cls::command::tview(const wstring& filename)
 		throw dfs_cls::exception{L"failed open file"};
 
 	wstring line;
-	for(unsigned int i{1}; getline(file, line); ++line)
+	for(auto i = 1; getline(file, line); ++line)
 		wcout << wformat{L"%1%:\t%2%"} % i % line << endl;
 }
 
@@ -259,7 +264,7 @@ void dfs_cls::command::findt(const wstring& filename, const wregex& r)
 		throw dfs_cls::exception{L"failed open file"};
 
 	wstring line;
-	for(unsigned int i{1}; getline(file, line); ++i)
+	for(auto i = 1; getline(file, line); ++i)
 	{
 		wsmatch result;
 		if(regex_search(line, result, r))
@@ -287,7 +292,7 @@ void dfs_cls::command::app(vector<wstring> args)
 		if(first)
 			first = false;
 		else
-			first += (L' ' + arg);
+			command_ws += (L' ' + arg);
 	}
 
 	const auto command_len = command_ws.size();

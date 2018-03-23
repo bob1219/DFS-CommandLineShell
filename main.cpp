@@ -23,6 +23,7 @@ int wmain(int argc, wchar_t** argv)
 {
 	try
 	{
+		// setting locale
 		wcout.imbue(locale{""});
 		wcerr.imbue(locale{""});
 		wcin.imbue(locale{""});
