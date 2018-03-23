@@ -12,7 +12,7 @@ using namespace std;
 
 void dfs_cls::script(const wstring& filename)
 {
-	ifstream file;
+	wifstream file;
 	file.imbue(locale{""});
 	file.open(filename);
 	if(file.fail())

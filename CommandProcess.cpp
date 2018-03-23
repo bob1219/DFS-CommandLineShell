@@ -116,17 +116,11 @@ void dfs_cls::CommandProcess(const wstring& command)
 			arg_error();
 		command::findt(tokens.at(1), wregex{tokens.at(2)});
 	}
-	else if(tokens.at(0) == L"date")
+	else if(tokens.at(0) == L"now")
 	{
 		if(tokens.size() != 1)
 			arg_error();
-		command::date();
-	}
-	else if(tokens.at(0) == L"time")
-	{
-		if(tokens.size() != 1)
-			arg_error();
-		command::time();
+		command::now();
 	}
 	else if(tokens.at(0) == L"app")
 	{

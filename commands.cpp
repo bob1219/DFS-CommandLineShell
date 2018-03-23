@@ -9,6 +9,7 @@
 #include <memory>
 #include <cstring>
 #include <vector>
+#include <iterator>
 
 // boost
 #include <boost/filesystem.hpp>
@@ -26,7 +27,7 @@ using namespace boost;
 
 void dfs_cls::command::mk(const wstring& filename)
 {
-	wofstream file{filename};
+	std::wofstream file{filename};
 	if(file.fail())
 		throw dfs_cls::exception{L"failed open file"};
 }
@@ -50,7 +51,7 @@ void dfs_cls::command::cp(const wstring& SourceFileName, const wstring& DestFile
 {
 	try
 	{
-		copy_file(SourceFileName, DestFileName, overwrite_if_exists);
+		copy_file(SourceFileName, DestFileName, copy_option::overwrite_if_exists);
 	}
 	catch(filesystem_error)
 	{
@@ -65,7 +66,7 @@ void dfs_cls::command::basename(const wstring& filename)
 
 void dfs_cls::command::findf(const wstring& dirname, const wregex& r)
 {
-	for_each(directory_iterator{dirname}, directory_iterator{}, [](const wpath& p)
+	for_each(directory_iterator{dirname}, directory_iterator{}, [&](const wpath& p)
 	{
 		if(regex_match(p.wstring(), r))
 			wcout << p.wstring() << endl;
@@ -116,12 +117,12 @@ void dfs_cls::command::cpdir(const wstring& sourceDirName, const wstring& destDi
 		wstring SourceDirName{begin(sourceDirName), end(sourceDirName)};
 		wstring DestDirName{begin(destDirName), end(destDirName)};
 
-		for_each(directory_iterator{SourceDirName}, directory_iterator{}, [](const wpath& p)
+		for_each(directory_iterator{SourceDirName}, directory_iterator{}, [&](const wpath& p)
 		{
 			if(is_directory(p))
-				cpdir(p, DestDirName + PATH_BREAK_CHARACTER + p.filename().wstring());
+				cpdir(p.wstring(), DestDirName + PATH_BREAK_CHARACTER + p.filename().wstring());
 			else
-				copy_file(p, DestDirName + PATH_BREAK_CHARACTER + p.filename().wstring(), copy_option::overwrite_if_exists);
+				copy_file(p.wstring(), DestDirName + PATH_BREAK_CHARACTER + p.filename().wstring(), copy_option::overwrite_if_exists);
 		});
 	}
 	catch(filesystem_error)
@@ -146,7 +147,7 @@ void dfs_cls::command::bview(const wstring& filename)
 {
 	constexpr auto BytesNumberInDatasUnit = 0x10;
 
-	ifstream file{filename, ios::binary};
+	std::ifstream file{filename, ios::binary};
 	if(file.fail())
 		throw dfs_cls::exception{L"failed open file"};
 
@@ -166,27 +167,27 @@ void dfs_cls::command::bview(const wstring& filename)
 	auto BaseIter = begin(data);
 	while(true)
 	{
-		auto start = BaseIter;
-		auto end = BaseIter;
+		auto StartIter = BaseIter;
+		auto EndIter = BaseIter;
 		for(auto i = 1;; ++i)
 		{
-			++end;
-			if(i == BytesNumberInDatasUnit + 1 || end == end(data))
+			++EndIter;
+			if(i == BytesNumberInDatasUnit + 1 || EndIter == end(data))
 			{
-				--end;
+				--EndIter;
 				break;
 			}
 		}
 
-		DataUnits.push_back(vector<char>{start, end});
-		if((end + 1) == end(data))
+		DataUnits.push_back(vector<char>{StartIter, EndIter});
+		if((EndIter + 1) == end(data))
 			break;
 
-		BaseIter = end;
+		BaseIter = EndIter;
 	}
 
 	// Print
-	for(const auto& DataUnit: DataLines)
+	for(const auto& DataUnit: DataUnits)
 	{
 		for(auto byte: DataUnit)
 			wcout << static_cast<unsigned int>(byte) << L' ' << endl;
@@ -204,14 +205,14 @@ void dfs_cls::command::bview(const wstring& filename)
 
 void dfs_cls::command::tview(const wstring& filename)
 {
-	wifstream file;
+	std::wifstream file;
 	file.imbue(locale{""});
 	file.open(filename);
 	if(file.fail())
 		throw dfs_cls::exception{L"failed open file"};
 
 	wstring line;
-	for(auto i = 1; getline(file, line); ++line)
+	for(auto i = 1; getline(file, line); ++i)
 		wcout << wformat{L"%1%:\t%2%"} % i % line << endl;
 }
 
@@ -227,7 +228,7 @@ void dfs_cls::command::info(const wstring& name)
 	bool isDirectory;
 	size_t size;
 	time_t time;
-	wstring extension;
+	unique_ptr<wchar_t[]> extension;
 	if(is_directory(p))
 	{
 		isDirectory = true;
@@ -239,12 +240,16 @@ void dfs_cls::command::info(const wstring& name)
 		isDirectory = false;
 		size = file_size(p);
 		time = last_write_time(p);
-		extension = extension(p);
+
+		const auto extension_c = boost::filesystem::extension(p).c_str();
+		const auto extension_len = strlen(extension_c);
+		extension.reset(new wchar_t[extension_len + 1]);
+		mbstowcs(extension.get(), extension_c, extension_len + 1);
 	}
 
 	const auto time_c = ctime(&time);
 	const auto time_len = strlen(time_c);
-	unique_ptr<wchar_t[]> time_s{new wchar_t[mess_len + 1]};
+	unique_ptr<wchar_t[]> time_s{new wchar_t[time_len + 1]};
 	mbstowcs(time_s.get(), time_c, time_len + 1);
 
 	wcout << wformat{L"Type: %1%"} % (isDirectory ? L"directory" : L"file") << endl;
@@ -252,12 +257,12 @@ void dfs_cls::command::info(const wstring& name)
 	wcout << wformat{L"Time: %1%"} % time_s.get() << endl;
 
 	if(!isDirectory)
-		wcout << wformat{L"Extension: %1%"} % extension << endl;
+		wcout << wformat{L"Extension: %1%"} % extension.get() << endl;
 }
 
 void dfs_cls::command::findt(const wstring& filename, const wregex& r)
 {
-	wifstream file;
+	std::wifstream file;
 	file.imbue(locale{""});
 	file.open(filename);
 	if(file.fail())
@@ -274,8 +279,8 @@ void dfs_cls::command::findt(const wstring& filename, const wregex& r)
 
 void dfs_cls::command::now()
 {
-	const auto time = time(nullptr);
-	const auto time_c = ctime(&time);
+	const time_t time_i{time(nullptr)};
+	const auto time_c = ctime(&time_i);
 	const auto time_len = strlen(time_c);
 	unique_ptr<wchar_t[]> time{new wchar_t[time_len + 1]};
 	mbstowcs(time.get(), time_c, time_len + 1);
@@ -283,10 +288,10 @@ void dfs_cls::command::now()
 	wcout << time.get() << endl;
 }
 
-void dfs_cls::command::app(vector<wstring> args)
+void dfs_cls::command::app(const vector<wstring>& args)
 {
 	wstring command_ws{args.at(0)};
-	const auto first = true;
+	auto first = true;
 	for(const auto& arg: args)
 	{
 		if(first)
@@ -299,5 +304,5 @@ void dfs_cls::command::app(vector<wstring> args)
 	unique_ptr<char[]> command{new char[command_len + 1]};
 	wcstombs(command.get(), command_ws.c_str(), command_len + 1);
 
-	system(command.get());
+	std::system(command.get());
 }

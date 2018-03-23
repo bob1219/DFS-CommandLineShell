@@ -11,7 +11,7 @@ namespace dfs_cls
 {
 	[[noreturn]] void CommandLine();
 	void script(const std::wstring& filename);
-	inline void welcome() { std::wcout << L"welcome to DFS-CommandLineShell" << endl; }
+	inline void welcome() { std::wcout << L"welcome to DFS-CommandLineShell" << std::endl; }
 	void CommandProcess(const std::wstring& command);
 
 	namespace command
@@ -20,10 +20,10 @@ namespace dfs_cls
 		void rm(const std::wstring& filename);
 		void cp(const std::wstring& FromFilename, const std::wstring& ToFilename);
 		void basename(const std::wstring& filename);
-		inline void findf(const std::wregex& r) { findf(L".", r); }
 		void findf(const std::wstring& dirname, const std::wregex& r);
-		inline void list() { list(L"."); }
+		inline void findf(const std::wregex& r) { findf(L".", r); }
 		void list(const std::wstring& dirname);
+		inline void list() { list(L"."); }
 		void mkdir(const std::wstring& dirname);
 		void rmdir(const std::wstring& dirname);
 		void cpdir(const std::wstring& fromDirname, const std::wstring& toDirname);
@@ -32,7 +32,7 @@ namespace dfs_cls
 		void tview(const std::wstring& filename);
 		void cwdir();
 		void info(const std::wstring& name);
-		void findt(const std::wstring& filename, const wregex& r);
+		void findt(const std::wstring& filename, const std::wregex& r);
 		void now();
 		void app(const std::vector<std::wstring>& args);
 	}
