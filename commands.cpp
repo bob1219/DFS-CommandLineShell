@@ -10,6 +10,9 @@
 #include <cstring>
 #include <vector>
 #include <iterator>
+#include <cctype>
+#include <ios>
+#include <iomanip>
 
 // boost
 #include <boost/filesystem.hpp>
@@ -186,20 +189,35 @@ void dfs_cls::command::bview(const wstring& filename)
 		BaseIter = EndIter;
 	}
 
+	wcout << hex;
+
 	// Print
+	auto i = 0;
 	for(const auto& DataUnit: DataUnits)
 	{
+		wcout << wformat{L"%X:\t"} % i;
+
 		for(auto byte: DataUnit)
-			wcout << static_cast<unsigned int>(byte) << L' ' << endl;
+			wcout << wformat{L"%02X "} % static_cast<unsigned int>(byte);
+
+		const auto DataSize = DataUnit.size();
+		if(DataSize < BytesNumberInDatasUnit)
+		{
+			for(auto i{1}; i <= BytesNumberInDatasUnit - DataSize; ++i)
+				for(auto j{1}; i <= 3; ++i)
+					wcout << L' ';
+			wcout << L' ';
+		}
 
 		for(auto byte: DataUnit)
 		{
 			wchar_t c;
 			mbtowc(&c, &byte, 1);
-			wcout << c;
+			wcout << (iswprint(c) ? c : L'.');
 		}
 
 		wcout << endl;
+		i += 0x10;
 	}
 }
 
