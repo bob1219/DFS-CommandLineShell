@@ -1,3 +1,8 @@
+// CommandLine.cpp
+// This file is a source file in DFS-CommandLineShell project.
+// This file and DFS-CommandLineShell project are licensed by GNU-GPL v3.0.
+// You can document of GNU-GPL v3.0 in "LICENSE" file or GNU official website(https://www.gnu.org/licenses/gpl-3.0.en.html).
+
 // standard library
 #include <string>
 #include <iostream>
