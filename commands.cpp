@@ -315,8 +315,8 @@ void dfs_cls::command::app(const vector<wstring>& args)
 	}
 
 	const auto command_len = command_ws.size();
-	unique_ptr<char[]> command{new char[command_len + 1]};
-	wcstombs(command.get(), command_ws.c_str(), command_len + 1);
+	unique_ptr<char[]> command{new char[MB_CUR_MAX * command_len + 1]};
+	wcstombs(command.get(), command_ws.c_str(), MB_CUR_MAX * command_len + 1);
 
 	std::system(command.get());
 }
