@@ -138,7 +138,7 @@ void dfs_cls::command::rename(const wstring& SourceName, const wstring& ToName)
 {
 	try
 	{
-		rename(SourceName, ToName);
+		boost::filesystem::rename(SourceName, ToName);
 	}
 	catch(filesystem_error)
 	{
