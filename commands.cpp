@@ -245,11 +245,10 @@ void dfs_cls::command::info(const wstring& name)
 	bool isDirectory;
 	size_t size;
 	time_t time;
-	unique_ptr<wchar_t[]> extension;
+	wstring extension;
 	if(is_directory(p))
 	{
 		isDirectory = true;
-		size = file_size(p);
 		time = last_write_time(p);
 	}
 	else if(is_regular_file(p))
@@ -257,11 +256,7 @@ void dfs_cls::command::info(const wstring& name)
 		isDirectory = false;
 		size = file_size(p);
 		time = last_write_time(p);
-
-		const auto extension_c = boost::filesystem::extension(p).c_str();
-		const auto extension_len = strlen(extension_c);
-		extension.reset(new wchar_t[extension_len + 1]);
-		mbstowcs(extension.get(), extension_c, extension_len + 1);
+		extension = p.extension().wstring();
 	}
 
 	const auto time_c = ctime(&time);
@@ -270,11 +265,13 @@ void dfs_cls::command::info(const wstring& name)
 	mbstowcs(time_s.get(), time_c, time_len + 1);
 
 	wcout << wformat{L"Type: %1%"} % (isDirectory ? L"directory" : L"file") << endl;
-	wcout << wformat{L"Size: %1%"} % size << endl;
-	wcout << wformat{L"Time: %1%"} % time_s.get() << endl;
+	wcout << wformat{L"Time: %1%"} % time_s.get();
 
 	if(!isDirectory)
-		wcout << wformat{L"Extension: %1%"} % extension.get() << endl;
+	{
+		wcout << wformat{L"Size: %1%"} % size << endl;
+		wcout << wformat{L"Extension: %1%"} % extension << endl;
+	}
 }
 
 void dfs_cls::command::findt(const wstring& filename, const wregex& r)
