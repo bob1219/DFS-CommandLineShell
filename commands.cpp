@@ -28,13 +28,6 @@ using namespace std;
 using namespace boost::filesystem;
 using namespace boost;
 
-void dfs_cls::command::mk(const wstring& filename)
-{
-	std::wofstream file{filename};
-	if(file.fail())
-		throw dfs_cls::exception{L"failed open file"};
-}
-
 void dfs_cls::command::rm(const wstring& filename)
 {
 	if(!is_regular_file(filename))
@@ -62,11 +55,6 @@ void dfs_cls::command::cp(const wstring& SourceFileName, const wstring& DestFile
 	}
 }
 
-void dfs_cls::command::basename(const wstring& filename)
-{
-	wcout << wpath{filename}.filename().wstring() << endl;
-}
-
 void dfs_cls::command::findf(const wstring& dirname, const wregex& r)
 {
 	for_each(directory_iterator{dirname}, directory_iterator{}, [&](const wpath& p)
@@ -85,12 +73,6 @@ void dfs_cls::command::list(const wstring& dirname)
 		else
 			wcout << L"dir:\t" << p.wstring() << endl;
 	});
-}
-
-void dfs_cls::command::mkdir(const wstring& dirname)
-{
-	if(!create_directory(dirname))
-		throw dfs_cls::exception{L"failed make a directory"};
 }
 
 void dfs_cls::command::rmdir(const wstring& dirname)
@@ -134,11 +116,11 @@ void dfs_cls::command::cpdir(const wstring& sourceDirName, const wstring& destDi
 	}
 }
 
-void dfs_cls::command::rename(const wstring& SourceName, const wstring& ToName)
+void dfs_cls::command::rename(const wstring& SourceName, const wstring& DestName)
 {
 	try
 	{
-		boost::filesystem::rename(SourceName, ToName);
+		boost::filesystem::rename(SourceName, DestName);
 	}
 	catch(filesystem_error)
 	{
@@ -216,7 +198,7 @@ void dfs_cls::command::bview(const wstring& filename)
 		}
 
 		wcout << endl;
-		i += 0x10;
+		i += BytesNumberInDatasUnit;
 	}
 }
 
@@ -231,11 +213,6 @@ void dfs_cls::command::tview(const wstring& filename)
 	wstring line;
 	for(auto i = 1; getline(file, line); ++i)
 		wcout << wformat{L"%1%:\t%2%"} % i % line << endl;
-}
-
-void dfs_cls::command::cwdir()
-{
-	wcout << current_path().wstring() << endl;
 }
 
 void dfs_cls::command::info(const wstring& name)
@@ -323,5 +300,4 @@ void dfs_cls::command::app(const vector<wstring>& args)
 
 void dfs_cls::command::chdir(const wstring& dirname)
 {
-	current_path(dirname);
 }
