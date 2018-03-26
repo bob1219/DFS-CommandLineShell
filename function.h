@@ -35,6 +35,7 @@ namespace dfs_cls
 		void findt(const std::wstring& filename, const std::wregex& r);
 		void now();
 		void app(const std::vector<std::wstring>& args);
+		void chdir(const std::wstring& dirname);
 	}
 }
 

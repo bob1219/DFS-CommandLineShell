@@ -128,6 +128,12 @@ void dfs_cls::CommandProcess(const wstring& command)
 			arg_error();
 		command::app(vector<wstring>{begin(tokens) + 1, end(tokens)});
 	}
+	else if(tokens.at(0) == L"chdir")
+	{
+		if(tokens.size() != 2)
+			arg_error();
+		command::chdir(tokens.at(1));
+	}
 	else if(tokens.at(0) == L"exit")
 		exit(EXIT_SUCCESS);
 	else throw dfs_cls::exception{L"unknown command"};
