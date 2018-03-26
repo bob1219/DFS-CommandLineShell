@@ -155,18 +155,18 @@ void dfs_cls::command::bview(const wstring& filename)
 		throw dfs_cls::exception{L"failed open file"};
 
 	// Read datas
-	vector<char> data;
+	vector<unsigned char> data;
 	while(!file.eof())
 	{
-		char buf;
-		file.read(&buf, 1);
+		unsigned char buf;
+		file.read(reinterpret_cast<char*>(&buf), 1);
 		data.push_back(buf);
 	}
 
 	wcout << L"\t+0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F 0123456789ABCDEF" << endl;
 
 	// Split Datas
-	vector<vector<char>> DataUnits;
+	vector<vector<unsigned char>> DataUnits;
 	auto BaseIter = begin(data);
 	while(true)
 	{
@@ -182,7 +182,7 @@ void dfs_cls::command::bview(const wstring& filename)
 			}
 		}
 
-		DataUnits.push_back(vector<char>{StartIter, EndIter});
+		DataUnits.push_back(vector<unsigned char>{StartIter, EndIter});
 		if((EndIter + 1) == end(data))
 			break;
 
@@ -203,16 +203,15 @@ void dfs_cls::command::bview(const wstring& filename)
 		const auto DataSize = DataUnit.size();
 		if(DataSize < BytesNumberInDatasUnit)
 		{
-			for(auto i{1}; i <= BytesNumberInDatasUnit - DataSize; ++i)
-				for(auto j{1}; i <= 3; ++i)
+			for(auto i{1}; i <= (BytesNumberInDatasUnit - DataSize); ++i)
+				for(auto j{1}; j <= 3; ++j)
 					wcout << L' ';
-			wcout << L' ';
 		}
 
 		for(auto byte: DataUnit)
 		{
 			wchar_t c;
-			mbtowc(&c, &byte, 1);
+			mbtowc(&c, reinterpret_cast<const char*>(&byte), 1);
 			wcout << (iswprint(c) ? c : L'.');
 		}
 
