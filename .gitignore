@@ -1,4 +1,2 @@
 *.txt
-*.lib
-makefile
 *.obj

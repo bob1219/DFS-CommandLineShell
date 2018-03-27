@@ -302,7 +302,3 @@ void dfs_cls::command::app(const vector<wstring>& args)
 
 	std::system(command.get());
 }
-
-void dfs_cls::command::chdir(const wstring& dirname)
-{
-}

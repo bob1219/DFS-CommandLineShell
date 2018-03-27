@@ -16,6 +16,9 @@
 // boost
 #include <boost/filesystem.hpp>
 
+// header
+#include "exception.h"
+
 namespace dfs_cls
 {
 	[[noreturn]] void CommandLine();
@@ -42,18 +45,18 @@ namespace dfs_cls
 		void findt(const std::wstring& filename, const std::wregex& r);
 		void now();
 		void app(const std::vector<std::wstring>& args);
-		inline void chdir(const std::wstring& dirname) { current_path(dirname); }
+		inline void chdir(const std::wstring& dirname) { boost::filesystem::current_path(dirname); }
 
-		inline void mk(const std::wstring& filename);
+		inline void mk(const std::wstring& filename)
 		{
 			std::wofstream file{filename};
 			if(file.fail())
 				throw dfs_cls::exception{L"failed open file"};
 		}
 
-		inline void mkdir(const std::wstring& dirname);
+		inline void mkdir(const std::wstring& dirname)
 		{
-			if(!create_directory(dirname))
+			if(!boost::filesystem::create_directory(dirname))
 				throw dfs_cls::exception{L"failed make a directory"};
 		}
 	}
