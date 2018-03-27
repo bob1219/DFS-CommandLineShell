@@ -1,3 +1,9 @@
+// CommandProcess.cpp
+// Copyright 2018 Daiki Yoshida. All rights reserved.
+// This file is a source file in DFS-CommandLineShell project.
+// This file and DFS-CommandLineShell project are licensed by GNU-GPL v3.0.
+// You can see document of GNU-GPL v3.0 in "LICENSE" file or GNU official website(https://www.gnu.org/licenses/gpl-3.0.en.html).
+
 // standard library
 #include <string>
 #include <vector>
@@ -116,23 +122,23 @@ void dfs_cls::CommandProcess(const wstring& command)
 			arg_error();
 		command::findt(tokens.at(1), wregex{tokens.at(2)});
 	}
-	else if(tokens.at(0) == L"date")
+	else if(tokens.at(0) == L"now")
 	{
 		if(tokens.size() != 1)
 			arg_error();
-		command::date();
-	}
-	else if(tokens.at(0) == L"time")
-	{
-		if(tokens.size() != 1)
-			arg_error();
-		command::time();
+		command::now();
 	}
 	else if(tokens.at(0) == L"app")
 	{
 		if(tokens.size() == 1)
 			arg_error();
 		command::app(vector<wstring>{begin(tokens) + 1, end(tokens)});
+	}
+	else if(tokens.at(0) == L"chdir")
+	{
+		if(tokens.size() != 2)
+			arg_error();
+		command::chdir(tokens.at(1));
 	}
 	else if(tokens.at(0) == L"exit")
 		exit(EXIT_SUCCESS);
