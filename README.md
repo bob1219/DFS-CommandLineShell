@@ -120,8 +120,10 @@ History
 * 1.0 (March 27th, 2018)
 	* First version
 
+* 1.1 (March 30th, 2018)
+	* Modify designs
 License
 -------
-Copyright 2018 Daiki Yoshida. All rights reserved.
-This program and its source file and header file are licensed by GNU-GPL v3.0.
-You can see document of GNU-GPL v3.0 in "LICENSE" file or GNU official website(https://www.gnu.org/licenses/gpl-3.0.en.html).
+Copyright 2018 Daiki Yoshida. All rights reserved.  
+This program and its source file and header file are licensed by GNU-GPL v3.0.  
+You can see document of GNU-GPL v3.0 in "LICENSE" file or GNU official website(https://www.gnu.org/licenses/gpl-3.0.en.html).  
