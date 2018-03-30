@@ -105,8 +105,17 @@ void dfs_cls::command::cpdir(const wstring& sourceDirName, const wstring& destDi
 		if(!create_directories(destDirName))
 			throw dfs_cls::exception{(wformat{L"failed make destination directory \"%1%\""} % destDirName).str()};
 
-		wstring SourceDirName{begin(sourceDirName), end(sourceDirName)};
-		wstring DestDirName{begin(destDirName), end(destDirName)};
+		auto end_of_source_dir_name{end(sourceDirName)};
+		wstring SourceDirName{begin(sourceDirName),
+			(*(end_of_source_dir_name - 1) == PATH_BREAK_CHARACTER)
+				? end_of_source_dir_name - 1
+				: end_of_source_dir_name};
+
+		auto end_of_dest_dir_name{end(destDirName)};
+		wstring DestDirName{begin(destDirName),
+			(*(end_of_dest_dir_name - 1) == PATH_BREAK_CHARACTER)
+				? end_of_dest_dir_name - 1
+				: end_of_dest_dir_name};
 
 		for_each(directory_iterator{SourceDirName}, directory_iterator{}, [&](const wpath& p)
 		{
@@ -136,7 +145,7 @@ void dfs_cls::command::rename(const wstring& SourceName, const wstring& DestName
 
 void dfs_cls::command::bview(const wstring& filename)
 {
-	constexpr auto BytesNumberInDatasUnit = 0x10;
+	constexpr auto BytesNumberInDatasUnit{0x10};
 
 	std::ifstream file{filename, ios::binary};
 	if(file.fail())
@@ -155,12 +164,12 @@ void dfs_cls::command::bview(const wstring& filename)
 
 	// Split Datas
 	vector<vector<unsigned char>> DataUnits;
-	auto BaseIter = begin(data);
+	auto BaseIter{begin(data)};
 	while(true)
 	{
-		auto StartIter = BaseIter;
-		auto EndIter = BaseIter;
-		for(auto i = 1;; ++i)
+		auto StartIter{BaseIter};
+		auto EndIter{BaseIter};
+		for(auto i{1};; ++i)
 		{
 			++EndIter;
 			if(i == BytesNumberInDatasUnit + 1 || EndIter == end(data))
@@ -177,18 +186,16 @@ void dfs_cls::command::bview(const wstring& filename)
 		BaseIter = EndIter;
 	}
 
-	wcout << hex;
-
 	// Print
-	auto i = 0;
+	auto i{0};
 	for(const auto& DataUnit: DataUnits)
 	{
 		wcout << wformat{L"%X:\t"} % i;
 
-		for(auto byte: DataUnit)
+		for(const auto byte: DataUnit)
 			wcout << wformat{L"%02X "} % static_cast<unsigned int>(byte);
 
-		const auto DataSize = DataUnit.size();
+		const auto DataSize{DataUnit.size()};
 		if(DataSize < BytesNumberInDatasUnit)
 		{
 			for(auto i{1}; i <= (BytesNumberInDatasUnit - DataSize); ++i)
@@ -217,13 +224,13 @@ void dfs_cls::command::tview(const wstring& filename)
 		throw dfs_cls::exception{L"failed open file"};
 
 	wstring line;
-	for(auto i = 1; getline(file, line); ++i)
+	for(auto i{1}; getline(file, line); ++i)
 		wcout << wformat{L"%1%:\t%2%"} % i % line << endl;
 }
 
 void dfs_cls::command::info(const wstring& name)
 {
-	wpath p{name};
+	const wpath p{name};
 
 	bool isDirectory;
 	size_t size;
@@ -242,8 +249,8 @@ void dfs_cls::command::info(const wstring& name)
 		extension = p.extension().wstring();
 	}
 
-	const auto time_c = ctime(&time);
-	const auto time_len = strlen(time_c);
+	const auto time_c{ctime(&time)};
+	const auto time_len{strlen(time_c)};
 	unique_ptr<wchar_t[]> time_s{new wchar_t[time_len + 1]};
 	mbstowcs(time_s.get(), time_c, time_len + 1);
 
@@ -266,7 +273,7 @@ void dfs_cls::command::findt(const wstring& filename, const wregex& r)
 		throw dfs_cls::exception{L"failed open file"};
 
 	wstring line;
-	for(auto i = 1; getline(file, line); ++i)
+	for(auto i{1}; getline(file, line); ++i)
 	{
 		wsmatch result;
 		if(regex_search(line, result, r))
@@ -277,8 +284,8 @@ void dfs_cls::command::findt(const wstring& filename, const wregex& r)
 void dfs_cls::command::now()
 {
 	const time_t time_i{time(nullptr)};
-	const auto time_c = ctime(&time_i);
-	const auto time_len = strlen(time_c);
+	const auto time_c{ctime(&time_i)};
+	const auto time_len{strlen(time_c)};
 	unique_ptr<wchar_t[]> time{new wchar_t[time_len + 1]};
 	mbstowcs(time.get(), time_c, time_len + 1);
 
@@ -288,7 +295,7 @@ void dfs_cls::command::now()
 void dfs_cls::command::app(const vector<wstring>& args)
 {
 	wstring command_ws{args.at(0)};
-	auto first = true;
+	auto first{true};
 	for(const auto& arg: args)
 	{
 		if(first)
@@ -297,7 +304,7 @@ void dfs_cls::command::app(const vector<wstring>& args)
 			command_ws += (L' ' + arg);
 	}
 
-	const auto command_len = command_ws.size();
+	const auto command_len{command_ws.size()};
 	unique_ptr<char[]> command{new char[MB_CUR_MAX * command_len + 1]};
 	wcstombs(command.get(), command_ws.c_str(), MB_CUR_MAX * command_len + 1);
 

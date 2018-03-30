@@ -24,7 +24,6 @@ namespace dfs_cls
 {
 	[[noreturn]] void CommandLine();
 	void script(const std::wstring& filename);
-	inline void welcome() { std::wcout << L"welcome to DFS-CommandLineShell" << std::endl; }
 	void CommandProcess(const std::wstring& command);
 
 	namespace command

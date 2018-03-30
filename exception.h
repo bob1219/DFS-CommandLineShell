@@ -18,7 +18,16 @@ namespace dfs_cls
 		std::wstring message;
 
 	public:
+		// Constructors
+		exception() = default;
+		exception(const exception&) = default;
+		exception(exception&&) = default;
 		explicit exception(const std::wstring& _message) : message{_message} {}
+
+		// Operators
+		exception& operator=(const exception&) = default;
+		exception& operator=(exception&&) = default;
+
 		const std::wstring getMessage() { return message; }
 	};
 }
