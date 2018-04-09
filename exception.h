@@ -28,7 +28,7 @@ namespace dfs_cls
 		exception& operator=(const exception&) = default;
 		exception& operator=(exception&&) = default;
 
-		const std::wstring getMessage() { return message; }
+		const auto getMessage() { return message; }
 	};
 }
 

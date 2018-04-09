@@ -105,14 +105,14 @@ void dfs_cls::command::cpdir(const wstring& sourceDirName, const wstring& destDi
 		if(!create_directories(destDirName))
 			throw dfs_cls::exception{(wformat{L"failed make destination directory \"%1%\""} % destDirName).str()};
 
-		auto end_of_source_dir_name{end(sourceDirName)};
-		wstring SourceDirName{begin(sourceDirName),
+		const auto end_of_source_dir_name{end(sourceDirName)};
+		const wstring SourceDirName{begin(sourceDirName),
 			(*(end_of_source_dir_name - 1) == PATH_BREAK_CHARACTER)
 				? end_of_source_dir_name - 1
 				: end_of_source_dir_name};
 
-		auto end_of_dest_dir_name{end(destDirName)};
-		wstring DestDirName{begin(destDirName),
+		const auto end_of_dest_dir_name{end(destDirName)};
+		const wstring DestDirName{begin(destDirName),
 			(*(end_of_dest_dir_name - 1) == PATH_BREAK_CHARACTER)
 				? end_of_dest_dir_name - 1
 				: end_of_dest_dir_name};
@@ -160,8 +160,6 @@ void dfs_cls::command::bview(const wstring& filename)
 		data.push_back(buf);
 	}
 
-	wcout << L"\t+0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F 0123456789ABCDEF" << endl;
-
 	// Split Datas
 	vector<vector<unsigned char>> DataUnits;
 	auto BaseIter{begin(data)};
@@ -185,6 +183,8 @@ void dfs_cls::command::bview(const wstring& filename)
 
 		BaseIter = EndIter;
 	}
+
+	wcout << L"\t+0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F 0123456789ABCDEF" << endl;
 
 	// Print
 	auto i{0};
@@ -283,7 +283,7 @@ void dfs_cls::command::findt(const wstring& filename, const wregex& r)
 
 void dfs_cls::command::now()
 {
-	const time_t time_i{time(nullptr)};
+	const auto time_i{time(nullptr)};
 	const auto time_c{ctime(&time_i)};
 	const auto time_len{strlen(time_c)};
 	unique_ptr<wchar_t[]> time{new wchar_t[time_len + 1]};
